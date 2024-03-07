@@ -19,7 +19,7 @@ public class Main {
         @Override
         public WalkFlow onWalkStart(WalkEvent keywordWalkEvent) {
             JsonNode schemaNode = keywordWalkEvent.getSchemaNode();
-            schemaNode.get("title").textValue()
+            System.out.println(schemaNode.toString());
             return WalkFlow.CONTINUE;
         }
 
@@ -28,6 +28,4 @@ public class Main {
 
         }
     }
-}
-
 }
