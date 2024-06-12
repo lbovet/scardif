@@ -24,6 +24,10 @@
       "type": "integer",
       "minimum": 0
     },
+    "recruitment" : {
+      "type": "string",
+      "format": "date"
+    },
     "address": {
       "$ref": "#/definitions/Address"
     },

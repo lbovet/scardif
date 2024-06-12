@@ -2,6 +2,7 @@
   "firstName": "John",
   "lastName": "Doe",
   "age": 21,
+  "recruitment": "2020-01-01",
   "tags": [
     "new",
     "good"
