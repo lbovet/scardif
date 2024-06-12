@@ -1,5 +1,23 @@
 {
   "firstName": "John",
   "lastName": "Doe",
-  "age": 21
+  "age": 21,
+  "tags": [
+    "new",
+    "good"
+  ],
+  "address": {
+    "street": "Baker St."
+  },
+  "deliveryAddresses": [
+    {
+      "street" : "Main St."
+    },
+    {
+      "street" : "Second St."
+    }
+  ],
+  "family": {
+    "spouse": "Mary"
+  }
 }

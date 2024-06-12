@@ -12,10 +12,44 @@
       "type": "string",
       "description": "The person's last name."
     },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Arbitrary label"
+      }
+    },
     "age": {
       "description": "Age in years which must be equal to or greater than zero.",
       "type": "integer",
       "minimum": 0
+    },
+    "address": {
+      "$ref": "#/definitions/Address"
+    },
+    "deliveryAddresses": {
+      "type" : "array",
+      "items" : {
+        "$ref": "#/definitions/Address"
+      }
+    },
+    "family": {
+      "type": "object",
+      "properties": {
+        "spouse":  {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        }
+      }
     }
   }
 }
