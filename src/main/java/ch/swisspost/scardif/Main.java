@@ -54,9 +54,8 @@ public class Main {
             var link = Optional.ofNullable(instance.property).orElse(instance.schema.iri);
             if(instance.parent != null) {
                 modelBuilder.add(dataIri(rootIri, instance.parent.location), schemaIri(link), instanceIri);
-            }
-            if("object".equals(instance.schema.properties.get("type"))) {
-                modelBuilder.add(instanceIri, RDF.TYPE, schemaIri(instance.schema.iri));
+                modelBuilder.add(schemaIri(link), RDF.TYPE, RDF.PROPERTY);
+                modelBuilder.add(schemaIri(link), RDFS.LABEL, shortName(link));
             }
             if(instance.value != null) {
                 var format = instance.schema.properties.get("format");
@@ -74,11 +73,31 @@ public class Main {
                 modelBuilder.add(instanceIri, RDF.VALUE, value);
                 modelBuilder.add(instanceIri, RDFS.LABEL, instance.value.asText());
             }
+            Optional.ofNullable(instance.schema.properties.get("type")).ifPresent(type -> {
+                modelBuilder.add(instanceIri, RDF.TYPE, Values.iri(jsonSchemaNs+type));
+                modelBuilder.add(Values.iri(jsonSchemaNs+type), RDF.TYPE, RDFS.CLASS);
+            });
+            modelBuilder.add(instanceIri, RDF.TYPE, schemaIri(instance.schema.iri));
+            var shortName = shortName(instance.schema.iri);
+            if(!shortName.isBlank()) {
+                modelBuilder.add(schemaIri(instance.schema.iri), RDFS.LABEL, shortName);
+            }
+            modelBuilder.add(schemaIri(instance.schema.iri), RDF.TYPE, RDFS.CLASS);
         });
 
         listener.getSchemas().values().forEach(schema -> {
+            modelBuilder.add(schemaIri(schema.iri), RDF.TYPE, RDFS.CLASS);
             schema.properties.forEach((property, value) -> {
-                modelBuilder.add(schemaIri(schema.iri), Values.iri(jsonSchemaNs+property), Values.literal(value));
+                switch (property) {
+                    case "type" -> {
+                        modelBuilder.add(schemaIri(schema.iri), RDFS.SUBCLASSOF, Values.iri(jsonSchemaNs + value));
+                        modelBuilder.add(Values.iri(jsonSchemaNs + value), RDF.TYPE, RDFS.CLASS);
+                    }
+                    case "description" -> {
+                        modelBuilder.add(schemaIri(schema.iri), RDFS.COMMENT, Values.literal(value));
+                    }
+                }
+                 modelBuilder.add(schemaIri(schema.iri), Values.iri(jsonSchemaNs + property), Values.literal(value));
             });
         });
 
@@ -93,11 +112,22 @@ public class Main {
     }
 
     static IRI dataIri(String rootIri, String location) {
-        return Values.iri(rootIri, location.replace("$.", "").replace("$","").replace(".", "/").replace("[", "/").replace("]", ""));
+        return Values.iri(rootIri, location.replace("$.", "").replace("$","").replace(".", "/").replace("[", "/").replace("]", "").replace("/", "."));
     }
 
     static IRI schemaIri(String schemaIri) {
-        return Values.iri(schemaIri);
+        var segments = schemaIri.split("#");
+        return Values.iri(segments[0]+"#", segments.length > 1 ? segments[1].replaceFirst("^/", "").replace("/", "."): "");
+    }
+
+    static String shortName(String iri) {
+        if(iri.contains("#")) {
+            String result = iri.substring(iri.lastIndexOf("#")+1);
+            result = result.substring(result.lastIndexOf("/")+1);
+            return result;
+        } else {
+            return iri;
+        }
     }
 
     @RequiredArgsConstructor
