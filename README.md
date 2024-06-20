@@ -1,3 +1,8 @@
 # scardif
 
-Convert JSON to RDF deriving ontology from JSON schema
+## Features
+
+`SchematicJsonRdfSource`: 
+Convert JSON to RDF and derived ontology from JSON schema
+
+
