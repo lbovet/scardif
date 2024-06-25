@@ -1,4 +1,4 @@
-package ch.swisspost.scardif;
+package ch.swisspost.scardif.model;
 
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 

@@ -1,6 +1,7 @@
 package ch.swisspost.scardif.json;
 
-import ch.swisspost.scardif.RdfSource;
+import ch.swisspost.scardif.model.RdfSource;
+import ch.swisspost.scardif.resource.Resource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.*;
 import com.networknt.schema.walk.JsonSchemaWalkListener;
@@ -27,14 +28,14 @@ import java.util.stream.Stream;
 public class SchematicJsonRdfSource implements RdfSource {
     public static final String JSON_SCHEMA_NS = "https://jsonschema.org#";
 
-    private final JsonResource schema;
-    private final Stream<JsonResource> documents;
+    private final Resource schema;
+    private final Stream<Resource> documents;
 
     @Override
     public void generate(ModelBuilder modelBuilder) {
         documents.forEach(document -> {
             var rootIri = document.iri();
-            var schemaSource = schema.content();
+            var schemaSource = schema.readString();
 
             SchemaValidatorsConfig schemaValidatorsConfig = new SchemaValidatorsConfig();
             RdfKeywordListener listener = new RdfKeywordListener();
@@ -44,7 +45,7 @@ public class SchematicJsonRdfSource implements RdfSource {
                     .builder(JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012)).addMetaSchema(JsonMetaSchema.getV202012())
                     .build();
 
-            schemaFactory.getSchema(schemaSource, schemaValidatorsConfig).walk(document.content(), InputFormat.JSON, true);
+            schemaFactory.getSchema(schemaSource, schemaValidatorsConfig).walk(document.readString(), InputFormat.JSON, true);
 
             listener.getInstances().values().forEach(instance -> addInstance(modelBuilder, instance, rootIri));
             listener.getSchemas().values().forEach(schemaElement -> addSchema(modelBuilder, schemaElement));

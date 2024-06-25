@@ -2,7 +2,6 @@ package ch.swisspost.scardif.graph;
 
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.repository.Repository;
 
 @RequiredArgsConstructor
 public class ModelLayer implements Layer {
