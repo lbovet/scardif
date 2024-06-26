@@ -2,15 +2,17 @@ package ch.swisspost.scardif.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.sail.NotifyingSail;
+import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +20,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Graph {
-    private Repository repository = new SailRepository(new MemoryStore());
 
+    private NotifyingSail topSail = new MemoryStore();
+    private SailRepository repository;
     private List<Layer> layers = new ArrayList<>();
 
     public Graph addLayer(Layer layer) {
@@ -32,17 +35,21 @@ public class Graph {
         layers.clear();
     }
 
-    public void write(RDFFormat format, OutputStream output) throws FileNotFoundException {
+    public void write(RDFFormat format, OutputStream output) {
         applyLayers();
-        try(var connection = repository.getConnection()) {
-            RDFWriter writer = Rio.createWriter(RDFFormat.TRIG, new FileOutputStream("target/out.trig"));
-            writer.startRDF();
-            connection.export(writer);
-            writer.endRDF();
+        try(var connection = new SailRepository(topSail).getConnection()) {
+            connection.add(new ModelBuilder()
+                .setNamespace("", "https://example.org/")
+                .add(":u", ":v", ":w").build());
+            connection.export(Rio.createWriter(format, output));
         }
     }
 
-    Repository getRepository() {
-        return repository;
+    NotifyingSail getTopSail() {
+        return topSail;
+    }
+
+    void setTopSail(NotifyingSail sail) {
+        this.topSail = sail;
     }
 }
