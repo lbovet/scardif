@@ -11,6 +11,6 @@ public class ConstructLayer implements Layer {
 
     @Override
     public void apply(Graph graph) {
-        graph.setTopSail(new CustomGraphQueryInferencer(graph.getTopSail(), QueryLanguage.SPARQL, query, query));
+        graph.setTopSail(new CustomGraphQueryInferencer(graph.getTopSail(), QueryLanguage.SPARQL, query, ""));
     }
 }

@@ -5,15 +5,19 @@ import lombok.NoArgsConstructor;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Triple;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.Sail;
+import org.eclipse.rdf4j.sail.inferencer.fc.CustomGraphQueryInferencer;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +39,10 @@ public class Graph {
         layers.clear();
     }
 
-    public void write(RDFFormat format, OutputStream output) {
+    public void write(RDFFormat format, OutputStream output) throws IOException {
         applyLayers();
+
         try(var connection = new SailRepository(topSail).getConnection()) {
-            connection.add(new ModelBuilder()
-                .setNamespace("", "https://example.org/")
-                .add(":u", ":v", ":w").build());
             connection.export(Rio.createWriter(format, output));
         }
     }

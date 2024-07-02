@@ -1,6 +1,6 @@
 package ch.swisspost.scardif.json;
 
-import ch.swisspost.scardif.model.RdfSource;
+import ch.swisspost.scardif.model.ModelSource;
 import ch.swisspost.scardif.resource.Resource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.*;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class SchematicJsonRdfSource implements RdfSource {
+public class SchematicJsonModelSource implements ModelSource {
     public static final String JSON_SCHEMA_NS = "https://jsonschema.org#";
 
     private final Resource schema;

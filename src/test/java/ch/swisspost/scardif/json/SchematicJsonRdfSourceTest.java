@@ -1,6 +1,5 @@
 package ch.swisspost.scardif.json;
 
-import ch.swisspost.scardif.resource.Resource;
 import ch.swisspost.scardif.resource.StringResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -25,7 +24,7 @@ class SchematicJsonRdfSourceTest {
         var document = new StringResource("https://data.example.org/john#", documentContent);
 
         var modelBuilder = new ModelBuilder().namedGraph("https://graph.example.org/people");
-        new SchematicJsonRdfSource(schema, Stream.of(document)).generate(modelBuilder);
+        new SchematicJsonModelSource(schema, Stream.of(document)).generate(modelBuilder);
 
         RDFWriter writer = Rio.createWriter(RDFFormat.TRIG, new FileOutputStream("target/out.trig"));
         writer.startRDF();
