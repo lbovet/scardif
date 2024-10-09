@@ -8,11 +8,16 @@ import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SchematicJsonRdfSourceTest {
     @Test
@@ -34,5 +39,10 @@ class SchematicJsonRdfSourceTest {
             writer.handleStatement(statement);
         }
         writer.endRDF();
+
+        var expected = new Scanner(SchematicJsonRdfSourceTest.class.getClassLoader().getResourceAsStream("john.trig"), StandardCharsets.UTF_8).useDelimiter("\\A").next();
+        var actual = new String(Files.readAllBytes(Paths.get("target/out.trig")), StandardCharsets.UTF_8);
+
+        assertEquals(expected, actual);
     }
 }
